@@ -2,12 +2,24 @@ require('dotenv').config();
 const express = require('express');
 const app = express();
 const userRouter = require('./routes/userRouter');
-const adminRouter= require('./routes/adminRouter')
+const adminRouter= require('./routes/adminRouter');
 const mongoose = require('mongoose');
-const cors= require('cors')
+const cors= require('cors');
+//const rateLimit = require('express-rate-limit');
+const socketIO = require('socket.io');
+const Item= require('./models/Item');
+const http = require('http');
+
+//está afetando o front, depois vejo outra solução
+/*const limiter = rateLimit({
+  windowMs: 3000, 
+  max: 1, 
+  message: 'Aguarde alguns segundos antes de fazer uma nova solicitação.',
+});
+app.use(limiter);*/
 
 app.use(cors({ origin: '*' }));
-app.use(express.json())
+app.use(express.json());
 
 async function connectToDatabase() {
   try {
@@ -15,27 +27,37 @@ async function connectToDatabase() {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
+    console.log('Connected to database');
   } catch (error) {
     console.error('Error connecting to database:', error);
   }
-}
+};
+
+
+
+app.use('/user', userRouter,);
+app.use('/admin', adminRouter);
 
 connectToDatabase();
 
-app.use('/user', userRouter,);
-app.use('/admin', adminRouter)
+const server = http.createServer(app);
+const io= socketIO(server, {cors:{origin:'*'}});
+server.listen(process.env.PORT, () => {
+  console.log('Server running');
+});
+      
 
-async function startServer() {
-  try {
-    await connectToDatabase();
-    app.listen(process.env.PORT, () => {
-      console.log('Server running');
-      console.log('Connected to database');
-    });
-  } catch (error) {
-    console.error('Error starting server:', error);
-  }
-}
+io.on('connection', (socket) => {
+  socket.on('getItems', async () => {
+    try {
+      const allItems = await Item.find();
+      io.emit('allItems', allItems); 
+    } catch (error) {
+      console.error('Erro ao obter itens:', error.message);
+    }
+  });
+});
+ 
 
-startServer();
+
 
