@@ -9,6 +9,8 @@ const cors= require('cors');
 const socketIO = require('socket.io');
 const Item= require('./models/Item');
 const http = require('http');
+const { number } = require('@hapi/joi');
+//const User= require('./models/User')
 
 //está afetando o front, depois vejo outra solução
 /*const limiter = rateLimit({
@@ -27,6 +29,14 @@ async function connectToDatabase() {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
+
+    /* para atualizar o database
+    const users = await User.find();
+    for (const user of users) {
+      user.cartItems = user.cartItems || []; 
+      await user.save();
+    }
+    console.log('Todos os usuários foram atualizados com as IDs dos itens do carrinho.');*/
     console.log('Connected to database');
   } catch (error) {
     console.error('Error connecting to database:', error);
@@ -48,13 +58,16 @@ server.listen(process.env.PORT, () => {
       
 
 io.on('connection', (socket) => {
-  socket.on('getItems', async () => {
+  //console.log('new connection');
+ 
+ socket.on('getItems', async () => {
     try {
       const allItems = await Item.find();
-      io.emit('allItems', allItems); 
+      const itemsWithStock = allItems.filter(item => item.stockQuantity > 0);
+      io.emit('allItems', itemsWithStock  ); 
     } catch (error) {
       console.error('Erro ao obter itens:', error.message);
-    }
+    } 
   });
 });
  

@@ -49,9 +49,11 @@ const newPasswordValidate = (data) => {
 const newItemValidate = (data) => {
   data.price = parseFloat(data.price); 
   data.category = String(data.category);
+  data.stockQuantity = parseInt(data.stockQuantity); 
   const schema = Joi.object({
     category: Joi.string().required().min(3).max(50),
     price: Joi.number().required().min(1).max(500000000),
+    stockQuantity: Joi.number().required().min(1).max(500000000),
     description: Joi.string().required().min(4).max(100)
   });
 

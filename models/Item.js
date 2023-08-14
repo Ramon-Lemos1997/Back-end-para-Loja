@@ -4,9 +4,9 @@ const itemSchema = mongoose.Schema({
     //name: { type: String, required: true },
     description: { type: String, required: true },
     price: { type: Number, required: true },
+    stockQuantity: { type: Number, required: true, default:0},
     category: { type: String,  required: true },
-    //availability: { type: Boolean, default: true },
-    //stockQuantity: { type: Number, default: 0 },
+    //availability: { type: Boolean, default: true }
     //imageURL: { type: String, required: true },
     createdAt: { type: Date, default: Date.now },
   });

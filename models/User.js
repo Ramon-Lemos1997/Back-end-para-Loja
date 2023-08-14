@@ -10,7 +10,8 @@ const userSchema = mongoose.Schema({
   expirationCodeRecovery: { type: Date, default: null },
   tokenExpirationValidate: { type: Date, default: null },
   loginAttempts: { type: Number, default: 0 },
-  lockUntil: { type: Date, default: null }
+  lockUntil: { type: Date, default: null },
+  cartItems: [{ type: mongoose.Schema.Types.ObjectId, default: [] }]
 });
 
 module.exports = mongoose.model('User', userSchema);
