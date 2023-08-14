@@ -20,7 +20,7 @@ const { number } = require('@hapi/joi');
 });
 app.use(limiter);*/
 
-app.use(cors({ origin: '*' }));
+app.use(cors({ origin: 'https://front-end-loja.vercel.app' }));
 app.use(express.json());
 
 async function connectToDatabase() {
